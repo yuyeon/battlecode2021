@@ -142,10 +142,10 @@ public strictfp class RobotPlayer {
         } else return false;
     }
 
-    /*
-    Encodes location into flag, using the rightmost 14 bits. The remaining leftmost bits are used to encode any
-    other information.
-    */
+    /**
+     * Encodes location into flag, using the rightmost 14 bits. The remaining leftmost bits are used to encode any
+     * other information.
+    **/
     static void sendLocation(int extraInfo) throws GameActionException {
         MapLocation loc = rc.getLocation();
         int x = loc.x, y = loc.y;
@@ -157,9 +157,9 @@ public strictfp class RobotPlayer {
 
     static final int BITS = 7;
 
-    /*
-    Decodes location from given flag.
-    */
+    /**
+     * Decodes location from given flag.
+    **/
     static MapLocation getLocation(int flag) throws GameActionException{
         int y = flag & BITS;
         int x = (flag >> BITS) & 127;
@@ -196,5 +196,39 @@ public strictfp class RobotPlayer {
         }
 
         return new MapLocation(actualX, actualY);
+    }
+
+    static final double PASS_THRESHOLD = 0.5;
+    static double shortestDist = Integer.MAX_VALUE;
+
+    static Direction pathfind(MapLocation target) throws GameActionException{
+        MapLocation curr = rc.getLocation();
+        int distSquared = target.distanceSquaredTo(curr);
+        Direction step = curr.directionTo(target);
+        double dist = Math.sqrt(distSquared);
+        MapLocation afterStep = curr.add(step);
+        double estMinMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+
+        for(int i = 0; i < 2; i++){
+            Direction temp = step.rotateLeft();
+            afterStep = curr.add(temp);
+            dist = Math.sqrt(target.distanceSquaredTo(afterStep));
+            double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+            if(estMoves < estMinMoves){
+                estMinMoves = estMoves;
+            }
+        }
+
+        for(int j = 0; j < 2; j++){
+            Direction temp = step.rotateRight();
+            afterStep = curr.add(temp);
+            dist = Math.sqrt(target.distanceSquaredTo(afterStep));
+            double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+            if(estMoves < estMinMoves){
+                estMinMoves = estMoves;
+            }
+        }
+
+        return step;
     }
 }
