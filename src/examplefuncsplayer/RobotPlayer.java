@@ -217,6 +217,7 @@ public strictfp class RobotPlayer {
             double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
             if(estMoves < estMinMoves){
                 estMinMoves = estMoves;
+                step = temp;
             }
         }
 
@@ -227,6 +228,7 @@ public strictfp class RobotPlayer {
             double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
             if(estMoves < estMinMoves){
                 estMinMoves = estMoves;
+                step = temp;
             }
         }
 
