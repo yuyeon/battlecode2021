@@ -203,10 +203,11 @@ public strictfp class RobotPlayer {
 
     static Direction pathfind(MapLocation target) throws GameActionException{
         MapLocation curr = rc.getLocation();
-        int distSquared = target.distanceSquaredTo(curr);
         Direction step = curr.directionTo(target);
-        double dist = Math.sqrt(distSquared);
         MapLocation afterStep = curr.add(step);
+
+        int distSquared = target.distanceSquaredTo(afterStep);
+        double dist = Math.sqrt(distSquared);
         double estMinMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
 
         for(int i = 0; i < 2; i++){
