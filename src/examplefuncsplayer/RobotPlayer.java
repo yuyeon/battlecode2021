@@ -215,7 +215,7 @@ public strictfp class RobotPlayer {
             afterStep = curr.add(temp);
             dist = Math.sqrt(target.distanceSquaredTo(afterStep));
             double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
-            if(estMoves < estMinMoves){
+            if(estMoves < estMinMoves && rc.canMove(step)){
                 estMinMoves = estMoves;
                 step = temp;
             }
@@ -226,7 +226,7 @@ public strictfp class RobotPlayer {
             afterStep = curr.add(temp);
             dist = Math.sqrt(target.distanceSquaredTo(afterStep));
             double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
-            if(estMoves < estMinMoves){
+            if(estMoves < estMinMoves && rc.canMove(step)){
                 estMinMoves = estMoves;
                 step = temp;
             }
