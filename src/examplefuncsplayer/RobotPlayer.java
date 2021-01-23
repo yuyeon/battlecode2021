@@ -155,7 +155,7 @@ public strictfp class RobotPlayer {
     /**
      * Decodes location from given flag.
      */
-    static MapLocation getLocation(int flag) throws GameActionException {
+    static MapLocation getLocation(int flag) throws GameActionException{
         int y = flag & BITS;
         int x = (flag >> BITS) & 127;
 
@@ -187,5 +187,44 @@ public strictfp class RobotPlayer {
         }
 
         return new MapLocation(actualX, actualY);
+    }
+
+    static final double PASS_THRESHOLD = 0.5;
+    static double shortestDist = Integer.MAX_VALUE;
+
+    static Direction pathfind(MapLocation target) throws GameActionException{
+        MapLocation curr = rc.getLocation();
+        Direction step = curr.directionTo(target);
+        MapLocation afterStep = curr.add(step);
+
+        int distSquared = target.distanceSquaredTo(afterStep);
+        double dist = Math.sqrt(distSquared);
+        double estMinMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+        boolean canMove = rc.canMove(step);
+
+        for(int i = 0; i < 2; i++){
+            Direction temp = step.rotateLeft();
+            afterStep = curr.add(temp);
+            dist = Math.sqrt(target.distanceSquaredTo(afterStep));
+            double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+            if((estMoves < estMinMoves && rc.canMove(step)) || canMove){
+                canMove = false;
+                estMinMoves = estMoves;
+                step = temp;
+            }
+        }
+
+        for(int j = 0; j < 2; j++){
+            Direction temp = step.rotateRight();
+            afterStep = curr.add(temp);
+            dist = Math.sqrt(target.distanceSquaredTo(afterStep));
+            double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+            if(estMoves < estMinMoves && rc.canMove(step)){
+                estMinMoves = estMoves;
+                step = temp;
+            }
+        }
+
+        return step;
     }
 }
