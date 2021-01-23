@@ -209,13 +209,15 @@ public strictfp class RobotPlayer {
         int distSquared = target.distanceSquaredTo(afterStep);
         double dist = Math.sqrt(distSquared);
         double estMinMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+        boolean canMove = rc.canMove(step);
 
         for(int i = 0; i < 2; i++){
             Direction temp = step.rotateLeft();
             afterStep = curr.add(temp);
             dist = Math.sqrt(target.distanceSquaredTo(afterStep));
             double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
-            if(estMoves < estMinMoves && rc.canMove(step)){
+            if((estMoves < estMinMoves && rc.canMove(step)) || canMove){
+                canMove = false;
                 estMinMoves = estMoves;
                 step = temp;
             }
