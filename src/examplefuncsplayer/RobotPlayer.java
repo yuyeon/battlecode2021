@@ -1,24 +1,25 @@
 package examplefuncsplayer;
+
 import battlecode.common.*;
 
 public strictfp class RobotPlayer {
     static RobotController rc;
 
     static final RobotType[] spawnableRobot = {
-        RobotType.POLITICIAN,
-        RobotType.SLANDERER,
-        RobotType.MUCKRAKER,
+            RobotType.POLITICIAN,
+            RobotType.SLANDERER,
+            RobotType.MUCKRAKER,
     };
 
     static final Direction[] directions = {
-        Direction.NORTH,
-        Direction.NORTHEAST,
-        Direction.EAST,
-        Direction.SOUTHEAST,
-        Direction.SOUTH,
-        Direction.SOUTHWEST,
-        Direction.WEST,
-        Direction.NORTHWEST,
+            Direction.NORTH,
+            Direction.NORTHEAST,
+            Direction.EAST,
+            Direction.SOUTHEAST,
+            Direction.SOUTH,
+            Direction.SOUTHWEST,
+            Direction.WEST,
+            Direction.NORTHWEST,
     };
 
     static int turnCount;
@@ -45,10 +46,18 @@ public strictfp class RobotPlayer {
                 // You may rewrite this into your own control structure if you wish.
                 System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
                 switch (rc.getType()) {
-                    case ENLIGHTENMENT_CENTER: runEnlightenmentCenter(); break;
-                    case POLITICIAN:           runPolitician();          break;
-                    case SLANDERER:            runSlanderer();           break;
-                    case MUCKRAKER:            runMuckraker();           break;
+                    case ENLIGHTENMENT_CENTER:
+                        runEnlightenmentCenter();
+                        break;
+                    case POLITICIAN:
+                        Politician.run(rc);
+                        break;
+                    case SLANDERER:
+                        runSlanderer();
+                        break;
+                    case MUCKRAKER:
+                        runMuckraker();
+                        break;
                 }
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
@@ -71,20 +80,6 @@ public strictfp class RobotPlayer {
                 break;
             }
         }
-    }
-
-    static void runPolitician() throws GameActionException {
-        Team enemy = rc.getTeam().opponent();
-        int actionRadius = rc.getType().actionRadiusSquared;
-        RobotInfo[] attackable = rc.senseNearbyRobots(actionRadius, enemy);
-        if (attackable.length != 0 && rc.canEmpower(actionRadius)) {
-            System.out.println("empowering...");
-            rc.empower(actionRadius);
-            System.out.println("empowered");
-            return;
-        }
-        if (tryMove(randomDirection()))
-            System.out.println("I moved!");
     }
 
     static void runSlanderer() throws GameActionException {
@@ -142,25 +137,25 @@ public strictfp class RobotPlayer {
         } else return false;
     }
 
-    /*
-    Encodes location into flag, using the rightmost 14 bits. The remaining leftmost bits are used to encode any
-    other information.
-    */
+    /**
+     * Encodes location into flag, using the rightmost 14 bits. The remaining leftmost bits are used to encode any
+     * other information.
+     */
     static void sendLocation(int extraInfo) throws GameActionException {
         MapLocation loc = rc.getLocation();
         int x = loc.x, y = loc.y;
         int encodedLocation = ((x % 128) * 128) + (y % 28) + (extraInfo * 128 * 128);
-        if(rc.canSetFlag(encodedLocation)){
+        if (rc.canSetFlag(encodedLocation)) {
             rc.setFlag(encodedLocation);
         }
     }
 
     static final int BITS = 7;
 
-    /*
-    Decodes location from given flag.
-    */
-    static MapLocation getLocation(int flag) throws GameActionException{
+    /**
+     * Decodes location from given flag.
+     */
+    static MapLocation getLocation(int flag) throws GameActionException {
         int y = flag & BITS;
         int x = (flag >> BITS) & 127;
 
@@ -173,25 +168,21 @@ public strictfp class RobotPlayer {
 
         int xDiff = relX - x;
 
-        if(Math.abs(xDiff) < 64){
+        if (Math.abs(xDiff) < 64) {
             actualX = ((currLoc.x >> BITS) << BITS) + x;
-        }
-        else if(xDiff >= 64){
+        } else if (xDiff >= 64) {
             actualX = ((currLoc.x >> BITS) << BITS) + 128 + x;
-        }
-        else if(xDiff <= -64){
+        } else if (xDiff <= -64) {
             actualX = ((currLoc.x >> BITS) << BITS) - 128 + x;
         }
 
         int yDiff = relY - y;
 
-        if(Math.abs(yDiff) < 64){
+        if (Math.abs(yDiff) < 64) {
             actualY = ((currLoc.y >> BITS) << BITS) + y;
-        }
-        else if(yDiff >= 64){
+        } else if (yDiff >= 64) {
             actualY = ((currLoc.y >> BITS) << BITS) + 128 + y;
-        }
-        else if(yDiff <= -64){
+        } else if (yDiff <= -64) {
             actualY = ((currLoc.y >> BITS) << BITS) - 128 + y;
         }
 
