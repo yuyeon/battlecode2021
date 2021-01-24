@@ -4,6 +4,8 @@ import battlecode.common.*;
 
 import java.util.HashSet;
 
+import static examplefuncsplayer.GameUtils.spawnableRobot;
+
 public class EnlightenmentCenter {
     static RobotController rc;
 
@@ -20,23 +22,6 @@ public class EnlightenmentCenter {
         team = rc.getTeam();
         mode = 0;
     }
-
-    static final RobotType[] spawnableRobot = {
-            RobotType.POLITICIAN,
-            RobotType.SLANDERER,
-            RobotType.MUCKRAKER,
-    };
-
-    static final Direction[] directions = {
-            Direction.NORTH,
-            Direction.NORTHEAST,
-            Direction.EAST,
-            Direction.SOUTHEAST,
-            Direction.SOUTH,
-            Direction.SOUTHWEST,
-            Direction.WEST,
-            Direction.NORTHWEST,
-    };
 
     static final Direction[] cardinals = Direction.cardinalDirections();
 

@@ -2,27 +2,11 @@ package examplefuncsplayer;
 import battlecode.common.*;
 
 import static examplefuncsplayer.EnlightenmentCenter.runEnlightenmentCenter;
+import static examplefuncsplayer.GameUtils.directions;
+import static examplefuncsplayer.GameUtils.spawnableRobot;
 
 public strictfp class RobotPlayer {
     static RobotController rc;
-
-    static final RobotType[] spawnableRobot = {
-        RobotType.POLITICIAN,
-        RobotType.SLANDERER,
-        RobotType.MUCKRAKER,
-    };
-
-    static final Direction[] directions = {
-        Direction.NORTH,
-        Direction.NORTHEAST,
-        Direction.EAST,
-        Direction.SOUTHEAST,
-        Direction.SOUTH,
-        Direction.SOUTHWEST,
-        Direction.WEST,
-        Direction.NORTHWEST,
-    };
-
     static int turnCount;
 
     /**
