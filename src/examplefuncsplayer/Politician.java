@@ -32,7 +32,7 @@ public strictfp class Politician {
         }
 
         int minEnemyConviction = Integer.MAX_VALUE, maxEnemyConviction = Integer.MIN_VALUE;
-        for (RobotInfo enemy : enemies) {
+        for (RobotInfo enemy: enemies) {
             int ec = enemy.conviction;
             minEnemyConviction = Math.min(ec, minEnemyConviction);
             maxEnemyConviction = Math.max(ec, maxEnemyConviction);
@@ -44,19 +44,31 @@ public strictfp class Politician {
         if (canEmpower && shouldEmpower) {
             rc.empower(actionRadius);
         }
+
+        // TODO: implement flight (run away) logic
     }
 
     private static boolean shouldKms(int conviction, int maxFriendlyConviction) {
+        if (maxFriendlyConviction == Integer.MIN_VALUE) {
+            return false;
+        }
         return conviction < CONVICTION_THRESHOLD
                 && maxFriendlyConviction < CONVICTION_THRESHOLD;
     }
 
     private static boolean shouldPowerUpFriendly(int conviction, int received, int minFriendlyConviction) {
+        if (minFriendlyConviction == Integer.MIN_VALUE) {
+            return false;
+        }
         return conviction >= CONVICTION_THRESHOLD
+                && minFriendlyConviction < CONVICTION_THRESHOLD
                 && minFriendlyConviction + received >= CONVICTION_THRESHOLD;
     }
 
     private static boolean shouldConvertEnemy(int conviction, int received, int minEnemyConviction) {
+        if (minEnemyConviction == Integer.MAX_VALUE) {
+            return false;
+        }
         return conviction >= CONVICTION_THRESHOLD
                 && minEnemyConviction - received <= 0;
     }
