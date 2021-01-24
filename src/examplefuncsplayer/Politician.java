@@ -2,11 +2,16 @@ package examplefuncsplayer;
 
 import battlecode.common.*;
 
-public strictfp class Politician {
+public strictfp class Politician extends GenericRobot {
 
     private static final int CONVICTION_THRESHOLD = 10;
 
-    static void run(RobotController rc) throws GameActionException {
+    public Politician(RobotController rc) {
+        super(rc);
+    }
+
+    @Override
+    public void run() throws GameActionException {
         int actionRadius = rc.getType().actionRadiusSquared;
         Team team = rc.getTeam();
         RobotInfo[] friendlies = rc.senseNearbyRobots(actionRadius, team);

@@ -1,7 +1,7 @@
 package examplefuncsplayer;
+
 import battlecode.common.*;
 
-import static examplefuncsplayer.EnlightenmentCenter.runEnlightenmentCenter;
 import static examplefuncsplayer.GameUtils.directions;
 import static examplefuncsplayer.GameUtils.spawnableRobot;
 
@@ -30,11 +30,23 @@ public strictfp class RobotPlayer {
                 // Here, we've separated the controls into a different method for each RobotType.
                 // You may rewrite this into your own control structure if you wish.
                 System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
+                GenericRobot robot = null;
                 switch (rc.getType()) {
-                    case ENLIGHTENMENT_CENTER: runEnlightenmentCenter(); break;
-                    case POLITICIAN:           Politician.run(rc);          break;
-                    case SLANDERER:            runSlanderer();           break;
-                    case MUCKRAKER:            runMuckraker();           break;
+                    case ENLIGHTENMENT_CENTER:
+                        robot = new EnlightenmentCenter(rc);
+                        break;
+                    case POLITICIAN:
+                        robot = new Politician(rc);
+                        break;
+                    case SLANDERER:
+                        runSlanderer();
+                        break;
+                    case MUCKRAKER:
+                        runMuckraker();
+                        break;
+                }
+                if (robot != null) {
+                    robot.run();
                 }
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
@@ -105,12 +117,12 @@ public strictfp class RobotPlayer {
     /**
      * Encodes location into flag, using the rightmost 14 bits. The remaining leftmost bits are used to encode any
      * other information.
-    **/
+     **/
     static void sendLocation(int extraInfo) throws GameActionException {
         MapLocation loc = rc.getLocation();
         int x = loc.x, y = loc.y;
         int encodedLocation = ((x % 128) * 128) + (y % 28) + (extraInfo * 128 * 128);
-        if(rc.canSetFlag(encodedLocation)){
+        if (rc.canSetFlag(encodedLocation)) {
             rc.setFlag(encodedLocation);
         }
     }
@@ -119,8 +131,8 @@ public strictfp class RobotPlayer {
 
     /**
      * Decodes location from given flag.
-    **/
-    static MapLocation getLocation(int flag) throws GameActionException{
+     **/
+    static MapLocation getLocation(int flag) throws GameActionException {
         int y = flag & BITS;
         int x = (flag >> BITS) & 127;
 
@@ -133,25 +145,21 @@ public strictfp class RobotPlayer {
 
         int xDiff = relX - x;
 
-        if(Math.abs(xDiff) < 64){
+        if (Math.abs(xDiff) < 64) {
             actualX = ((currLoc.x >> BITS) << BITS) + x;
-        }
-        else if(xDiff >= 64){
+        } else if (xDiff >= 64) {
             actualX = ((currLoc.x >> BITS) << BITS) + 128 + x;
-        }
-        else if(xDiff <= -64){
+        } else if (xDiff <= -64) {
             actualX = ((currLoc.x >> BITS) << BITS) - 128 + x;
         }
 
         int yDiff = relY - y;
 
-        if(Math.abs(yDiff) < 64){
+        if (Math.abs(yDiff) < 64) {
             actualY = ((currLoc.y >> BITS) << BITS) + y;
-        }
-        else if(yDiff >= 64){
+        } else if (yDiff >= 64) {
             actualY = ((currLoc.y >> BITS) << BITS) + 128 + y;
-        }
-        else if(yDiff <= -64){
+        } else if (yDiff <= -64) {
             actualY = ((currLoc.y >> BITS) << BITS) - 128 + y;
         }
 
@@ -161,7 +169,7 @@ public strictfp class RobotPlayer {
     static final double PASS_THRESHOLD = 0.5;
     static double shortestDist = Integer.MAX_VALUE;
 
-    static Direction pathfind(MapLocation target) throws GameActionException{
+    static Direction pathfind(MapLocation target) throws GameActionException {
         MapLocation curr = rc.getLocation();
         Direction step = curr.directionTo(target);
         MapLocation afterStep = curr.add(step);
@@ -171,24 +179,24 @@ public strictfp class RobotPlayer {
         double estMinMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
         boolean canMove = rc.canMove(step);
 
-        for(int i = 0; i < 2; i++){
+        for (int i = 0; i < 2; i++) {
             Direction temp = step.rotateLeft();
             afterStep = curr.add(temp);
             dist = Math.sqrt(target.distanceSquaredTo(afterStep));
             double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
-            if((estMoves < estMinMoves && rc.canMove(step)) || canMove){
+            if ((estMoves < estMinMoves && rc.canMove(step)) || canMove) {
                 canMove = false;
                 estMinMoves = estMoves;
                 step = temp;
             }
         }
 
-        for(int j = 0; j < 2; j++){
+        for (int j = 0; j < 2; j++) {
             Direction temp = step.rotateRight();
             afterStep = curr.add(temp);
             dist = Math.sqrt(target.distanceSquaredTo(afterStep));
             double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
-            if(estMoves < estMinMoves && rc.canMove(step)){
+            if (estMoves < estMinMoves && rc.canMove(step)) {
                 estMinMoves = estMoves;
                 step = temp;
             }
