@@ -24,12 +24,12 @@ public strictfp class Politician extends GenericRobot {
 
         // TODO: if no robots are present, maybe move?
 
-        RobotInfo worstFriendlyPolitician = null, worstFriendly = null, bestFriendly = null;
+        RobotInfo bestBadPolitician = null, worstFriendly = null, bestFriendly = null;
         for (RobotInfo friendly : friendlies) {
             int fc = friendly.conviction;
             if (fc < CONVICTION_THRESHOLD && friendly.getType() == RobotType.POLITICIAN
-                    && (worstFriendlyPolitician == null || fc > worstFriendlyPolitician.getConviction())) {
-                worstFriendlyPolitician = friendly;
+                    && (bestBadPolitician == null || fc > bestBadPolitician.getConviction())) {
+                bestBadPolitician = friendly;
             }
             if (worstFriendly == null || fc < worstFriendly.getConviction()) {
                 worstFriendly = friendly;
@@ -51,7 +51,7 @@ public strictfp class Politician extends GenericRobot {
         }
 
         boolean shouldEmpower = shouldKms(conviction, bestFriendly)
-                || shouldPowerUpFriendlyPolitician(conviction, convictionReceivedIfEmpowered, worstFriendlyPolitician)
+                || shouldPowerUpFriendlyPolitician(conviction, convictionReceivedIfEmpowered, bestBadPolitician)
                 || shouldConvertEnemy(conviction, convictionReceivedIfEmpowered, worstEnemy);
         if (canEmpower && shouldEmpower) {
             rc.empower(actionRadius);
