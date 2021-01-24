@@ -1,9 +1,6 @@
 package examplefuncsplayer;
 
-import battlecode.common.GameActionException;
-import battlecode.common.RobotController;
-import battlecode.common.RobotInfo;
-import battlecode.common.Team;
+import battlecode.common.*;
 
 public strictfp class Politician {
 
@@ -22,25 +19,35 @@ public strictfp class Politician {
 
         // TODO: if no robots are present, maybe move?
 
-        int minFriendlyConviction = Integer.MIN_VALUE, maxFriendlyConviction = Integer.MIN_VALUE;
+        RobotInfo worstFriendlyPolitician = null, worstFriendly = null, bestFriendly = null;
         for (RobotInfo friendly : friendlies) {
             int fc = friendly.conviction;
-            if (fc < CONVICTION_THRESHOLD) {
-                minFriendlyConviction = Math.max(fc, minFriendlyConviction);
+            if (fc < CONVICTION_THRESHOLD && friendly.getType() == RobotType.POLITICIAN
+                    && (worstFriendlyPolitician == null || fc > worstFriendlyPolitician.getConviction())) {
+                worstFriendlyPolitician = friendly;
             }
-            maxFriendlyConviction = Math.max(fc, maxFriendlyConviction);
+            if (worstFriendly == null || fc < worstFriendly.getConviction()) {
+                worstFriendly = friendly;
+            }
+            if (bestFriendly == null || fc > bestFriendly.getConviction()) {
+                bestFriendly = friendly;
+            }
         }
 
-        int minEnemyConviction = Integer.MAX_VALUE, maxEnemyConviction = Integer.MIN_VALUE;
-        for (RobotInfo enemy: enemies) {
-            int ec = enemy.conviction;
-            minEnemyConviction = Math.min(ec, minEnemyConviction);
-            maxEnemyConviction = Math.max(ec, maxEnemyConviction);
+        RobotInfo worstEnemy = null, bestEnemy = null;
+        for (RobotInfo enemy : enemies) {
+            int ec = enemy.getConviction();
+            if (worstEnemy == null || ec < worstEnemy.getConviction()) {
+                worstEnemy = enemy;
+            }
+            if (bestEnemy == null || ec > bestEnemy.getConviction()) {
+                bestEnemy = enemy;
+            }
         }
 
-        boolean shouldEmpower = shouldKms(conviction, maxFriendlyConviction)
-                || shouldPowerUpFriendly(conviction, convictionReceivedIfEmpowered, minFriendlyConviction)
-                || shouldConvertEnemy(conviction, convictionReceivedIfEmpowered, minEnemyConviction);
+        boolean shouldEmpower = shouldKms(conviction, bestFriendly)
+                || shouldPowerUpFriendlyPolitician(conviction, convictionReceivedIfEmpowered, worstFriendlyPolitician)
+                || shouldConvertEnemy(conviction, convictionReceivedIfEmpowered, worstEnemy);
         if (canEmpower && shouldEmpower) {
             rc.empower(actionRadius);
         }
@@ -48,28 +55,29 @@ public strictfp class Politician {
         // TODO: implement flight (run away) logic
     }
 
-    private static boolean shouldKms(int conviction, int maxFriendlyConviction) {
-        if (maxFriendlyConviction == Integer.MIN_VALUE) {
+    private static boolean shouldKms(int conviction, RobotInfo bestFriendly) {
+        if (bestFriendly == null) {
             return false;
         }
         return conviction < CONVICTION_THRESHOLD
-                && maxFriendlyConviction < CONVICTION_THRESHOLD;
+                && bestFriendly.getConviction() < CONVICTION_THRESHOLD;
     }
 
-    private static boolean shouldPowerUpFriendly(int conviction, int received, int minFriendlyConviction) {
-        if (minFriendlyConviction == Integer.MIN_VALUE) {
+    private static boolean shouldPowerUpFriendlyPolitician(int conviction, int received, RobotInfo worstFriendly) {
+        if (worstFriendly == null) {
             return false;
         }
         return conviction >= CONVICTION_THRESHOLD
-                && minFriendlyConviction < CONVICTION_THRESHOLD
-                && minFriendlyConviction + received >= CONVICTION_THRESHOLD;
+                && worstFriendly.getType() == RobotType.POLITICIAN
+                && worstFriendly.getConviction() < CONVICTION_THRESHOLD
+                && worstFriendly.getConviction() + received >= CONVICTION_THRESHOLD;
     }
 
-    private static boolean shouldConvertEnemy(int conviction, int received, int minEnemyConviction) {
-        if (minEnemyConviction == Integer.MAX_VALUE) {
+    private static boolean shouldConvertEnemy(int conviction, int received, RobotInfo worstEnemy) {
+        if (worstEnemy == null) {
             return false;
         }
         return conviction >= CONVICTION_THRESHOLD
-                && minEnemyConviction - received <= 0;
+                && worstEnemy.getConviction() - received <= 0;
     }
 }
