@@ -1,6 +1,8 @@
 package examplefuncsplayer;
 import battlecode.common.*;
 
+import static examplefuncsplayer.EnlightenmentCenter.runEnlightenmentCenter;
+
 public strictfp class RobotPlayer {
     static RobotController rc;
 
@@ -57,18 +59,6 @@ public strictfp class RobotPlayer {
             } catch (Exception e) {
                 System.out.println(rc.getType() + " Exception");
                 e.printStackTrace();
-            }
-        }
-    }
-
-    static void runEnlightenmentCenter() throws GameActionException {
-        RobotType toBuild = randomSpawnableRobotType();
-        int influence = 50;
-        for (Direction dir : directions) {
-            if (rc.canBuildRobot(toBuild, dir, influence)) {
-                rc.buildRobot(toBuild, dir, influence);
-            } else {
-                break;
             }
         }
     }
