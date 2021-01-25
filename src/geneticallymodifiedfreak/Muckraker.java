@@ -77,7 +77,7 @@ public class Muckraker extends GenericRobot {
             return;
         }
         Direction pfDir = pathfind(rc, dirLoc);
-        if (tryMove(rc, pfDir)) {
+        if (pfDir != null && tryMove(rc, pfDir)) {
             return;
         }
         for (Direction dir : directions) {
