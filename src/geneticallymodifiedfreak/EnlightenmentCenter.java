@@ -4,7 +4,7 @@ import battlecode.common.*;
 
 import java.util.HashSet;
 
-import static geneticallymodifiedfreak.GameUtils.spawnableRobot;
+import static geneticallymodifiedfreak.GameUtils.*;
 
 public strictfp class EnlightenmentCenter extends GenericRobot {
     private static final Direction[] cardinals = Direction.cardinalDirections();
@@ -78,7 +78,7 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
             if(rc.canGetFlag(robotID)){
                 int flag = rc.getFlag(robotID);
                 if(enemyAt(flag)){
-                    MapLocation enemyLoc = getLocation(flag);
+                    MapLocation enemyLoc = getLocation(rc, flag);
                     enemyDir = rc.getLocation().directionTo(enemyLoc);
                 }
             }
@@ -86,62 +86,5 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
                 allies.remove(robotID);
             }
         }
-    }
-
-    /**
-     * Encodes location into flag, using the rightmost 14 bits. The remaining leftmost bits are used to encode any
-     * other information.
-     **/
-    public void sendLocation(int extraInfo) throws GameActionException {
-        MapLocation loc = rc.getLocation();
-        int x = loc.x, y = loc.y;
-        int encodedLocation = ((x % 128) * 128) + (y % 28) + (extraInfo * 128 * 128);
-        if (rc.canSetFlag(encodedLocation)) {
-            rc.setFlag(encodedLocation);
-        }
-    }
-
-    static final int BITS = 7;
-
-    /**
-     * Decodes location from given flag.
-     **/
-    public MapLocation getLocation(int flag) throws GameActionException {
-        int y = flag & BITS;
-        int x = (flag >> BITS) & 127;
-
-        MapLocation currLoc = rc.getLocation();
-
-        int relX = currLoc.x % 128;
-        int relY = currLoc.y % 128;
-
-        int actualX = 0, actualY = 0;
-
-        int xDiff = relX - x;
-
-        if (Math.abs(xDiff) < 64) {
-            actualX = ((currLoc.x >> BITS) << BITS) + x;
-        } else if (xDiff >= 64) {
-            actualX = ((currLoc.x >> BITS) << BITS) + 128 + x;
-        } else if (xDiff <= -64) {
-            actualX = ((currLoc.x >> BITS) << BITS) - 128 + x;
-        }
-
-        int yDiff = relY - y;
-
-        if (Math.abs(yDiff) < 64) {
-            actualY = ((currLoc.y >> BITS) << BITS) + y;
-        } else if (yDiff >= 64) {
-            actualY = ((currLoc.y >> BITS) << BITS) + 128 + y;
-        } else if (yDiff <= -64) {
-            actualY = ((currLoc.y >> BITS) << BITS) - 128 + y;
-        }
-
-        return new MapLocation(actualX, actualY);
-    }
-
-    public boolean enemyAt(int flag){
-        int first = flag >> 23;
-        return (flag == 1);
     }
 }
