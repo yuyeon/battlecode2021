@@ -2,9 +2,12 @@ package geneticallymodifiedfreak;
 
 import battlecode.common.*;
 
+import static geneticallymodifiedfreak.GameUtils.randomDirection;
+import static geneticallymodifiedfreak.GameUtils.tryMove;
+
 public strictfp class Politician extends GenericRobot {
 
-    private static final int CONVICTION_THRESHOLD = 10, EMPOWER_COST = 10;
+    private static final int CONVICTION_THRESHOLD = 10, EMPOWER_COST = 10, POWERUP_DELAY = 0;
 
     public Politician(RobotController rc) {
         super(rc);
@@ -65,7 +68,7 @@ public strictfp class Politician extends GenericRobot {
 
         boolean shouldEmpower = shouldKms(conviction, bestFriendly)
                 || shouldPowerUpFriendlyPolitician(conviction, convictionReceivedIfEmpowered, bestBadPolitician)
-                || shouldConvertEnemy(conviction, convictionReceivedIfEmpowered, worstEnemy);
+                || shouldAttack(conviction, convictionReceivedIfEmpowered, worstEnemy, friendlies.length);
         if (canEmpower && shouldEmpower) {
             rc.empower(actionRadius);
         }
@@ -86,21 +89,21 @@ public strictfp class Politician extends GenericRobot {
                 && bestFriendly.getConviction() < CONVICTION_THRESHOLD;
     }
 
-    private static boolean shouldPowerUpFriendlyPolitician(int conviction, int received, RobotInfo worstFriendly) {
+    private boolean shouldPowerUpFriendlyPolitician(int conviction, int received, RobotInfo worstFriendly) {
         if (worstFriendly == null) {
             return false;
         }
         return conviction >= CONVICTION_THRESHOLD
                 && worstFriendly.getType() == RobotType.POLITICIAN
-                && worstFriendly.getConviction() < CONVICTION_THRESHOLD
-                && worstFriendly.getConviction() + received >= CONVICTION_THRESHOLD;
+                && worstFriendly.getConviction() + received >= CONVICTION_THRESHOLD
+                && (worstFriendly.getConviction() < CONVICTION_THRESHOLD || turnCount >= POWERUP_DELAY);
     }
 
-    private static boolean shouldConvertEnemy(int conviction, int received, RobotInfo worstEnemy) {
+    private static boolean shouldAttack(int conviction, int received, RobotInfo worstEnemy, int numFriendlies) {
         if (worstEnemy == null) {
             return false;
         }
         return conviction >= CONVICTION_THRESHOLD
-                && worstEnemy.getConviction() - received <= 0;
+                && (worstEnemy.getConviction() - received <= 0 || numFriendlies > 0);
     }
 }

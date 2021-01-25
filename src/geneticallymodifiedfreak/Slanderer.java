@@ -5,7 +5,7 @@ import battlecode.common.*;
 import java.util.HashSet;
 
 import static geneticallymodifiedfreak.GameUtils.pathfind;
-import static geneticallymodifiedfreak.RobotPlayer.randomDirection;
+import static geneticallymodifiedfreak.GameUtils.randomDirection;
 
 public class Slanderer extends GenericRobot {
     private HashSet<Integer> allies;

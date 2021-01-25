@@ -2,6 +2,8 @@ package geneticallymodifiedfreak;
 
 import battlecode.common.*;
 
+import java.util.Random;
+
 public class GameUtils {
 //    public static final RobotType[] spawnableRobot = {
 //            RobotType.POLITICIAN,
@@ -21,6 +23,8 @@ public class GameUtils {
     };
 
     public static final int BITS = 7;
+
+    private static final Random random = new Random(1);
 
     /**
      * Attempts to move in a given direction.
@@ -144,5 +148,15 @@ public class GameUtils {
     public static boolean enemyAt(int flag){
         int first = flag >> 23;
         return (flag == 1);
+    }
+
+
+    /**
+     * Returns a random Direction.
+     *
+     * @return a random Direction
+     */
+    public static Direction randomDirection() {
+        return directions[(int) (random.nextDouble() * directions.length)];
     }
 }

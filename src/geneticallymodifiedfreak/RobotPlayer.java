@@ -17,6 +17,7 @@ public strictfp class RobotPlayer {
     @SuppressWarnings("unused")
     public static void run(RobotController rc) throws GameActionException {
 
+
         // This is the RobotController object. You use it to perform actions from this robot,
         // and to get information on its current status.
         RobotPlayer.rc = rc;
@@ -24,31 +25,35 @@ public strictfp class RobotPlayer {
         turnCount = 0;
 
         GenericRobot robot = null;
-        switch (rc.getType()) {
-            case ENLIGHTENMENT_CENTER:
-                robot = new EnlightenmentCenter(rc);
-                break;
-            case POLITICIAN:
-                robot = new Politician(rc);
-                break;
-            case SLANDERER:
-                robot = new Slanderer(rc);
-                break;
-            case MUCKRAKER:
-                robot = new Muckraker(rc);
-                break;
-        }
-
-        if(robot == null) return;
+        RobotType lastType = null;
 
         while (true) {
-            turnCount += 1;
+            turnCount++;
             // Try/catch blocks stop unhandled exceptions, which cause your robot to freeze
             try {
                 // Here, we've separated the controls into a different method for each RobotType.
                 // You may rewrite this into your own control structure if you wish.
-
-                robot.run();
+                if (lastType == null || lastType != rc.getType()) {
+                    lastType = rc.getType();
+                    switch (lastType) {
+                        case ENLIGHTENMENT_CENTER:
+                            robot = new EnlightenmentCenter(rc);
+                            break;
+                        case POLITICIAN:
+                            robot = new Politician(rc);
+                            break;
+                        case SLANDERER:
+                            robot = new Slanderer(rc);
+                            break;
+                        case MUCKRAKER:
+                            robot = new Muckraker(rc);
+                            break;
+                    }
+                }
+                if (robot != null) {
+                    robot.turnCount = turnCount;
+                    robot.run();
+                }
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 Clock.yield();
@@ -58,15 +63,5 @@ public strictfp class RobotPlayer {
                 e.printStackTrace();
             }
         }
-    }
-
-    private static final Random random = new Random(1);
-    /**
-     * Returns a random Direction.
-     *
-     * @return a random Direction
-     */
-    static Direction randomDirection() {
-        return directions[(int) (random.nextDouble() * directions.length)];
     }
 }

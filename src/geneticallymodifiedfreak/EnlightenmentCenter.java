@@ -8,6 +8,7 @@ import static geneticallymodifiedfreak.GameUtils.*;
 
 public strictfp class EnlightenmentCenter extends GenericRobot {
     private static final Direction[] cardinals = Direction.cardinalDirections();
+    public static final int POL_SCOUTING_INF = 1, POL_NORMAL_INF = 100;
 
     private HashSet<Integer> allies;
     private HashSet<Integer> enemies;
@@ -36,8 +37,8 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
                 }
             }
             else if(round <= 5){
-                if(rc.canBuildRobot(RobotType.POLITICIAN, cardinals[round - 2], 1)){
-                    rc.buildRobot(RobotType.POLITICIAN, cardinals[round - 2], 1); //build politician in each direction for scouting
+                if(rc.canBuildRobot(RobotType.POLITICIAN, cardinals[round - 2], POL_SCOUTING_INF)){
+                    rc.buildRobot(RobotType.POLITICIAN, cardinals[round - 2], POL_SCOUTING_INF); //build politician in each direction for scouting
                 }
             }
             else if(influence >= 85){
@@ -48,10 +49,10 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
         }
         else if(round <= 750){
             if(round % 10 == 0 || round % 10 == 1){
-                Direction spawnDir = RobotPlayer.randomDirection();
+                Direction spawnDir = randomDirection();
                 if(enemyDir != null) spawnDir = enemyDir;
-                if(rc.canBuildRobot(RobotType.POLITICIAN, spawnDir, 100)){
-                    rc.buildRobot(RobotType.POLITICIAN, spawnDir, 100); //build politician pair every 10 rounds
+                if(rc.canBuildRobot(RobotType.POLITICIAN, spawnDir, POL_NORMAL_INF)){
+                    rc.buildRobot(RobotType.POLITICIAN, spawnDir, POL_NORMAL_INF); //build politician pair every 10 rounds
                 }
             }
             else if(influence <= 949){

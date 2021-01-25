@@ -5,6 +5,7 @@ import battlecode.common.RobotController;
 
 public abstract class GenericRobot {
     protected RobotController rc;
+    protected int turnCount = 0;
 
     public GenericRobot(RobotController rc) {
         this.rc = rc;
