@@ -23,6 +23,7 @@ public strictfp class Politician extends GenericRobot {
         int convictionReceivedIfEmpowered = conviction / empowerNum;
 
         // TODO: if no robots are present, maybe move?
+        // TODO: strategy, if enemy in sensing distance, don't move
 
         RobotInfo bestBadPolitician = null, worstFriendly = null, bestFriendly = null;
         for (RobotInfo friendly : friendlies) {

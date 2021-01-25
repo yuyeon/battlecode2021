@@ -22,6 +22,7 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
         mode = 0;
     }
 
+    @Override
     public void run() throws GameActionException {
         int influence = rc.getInfluence();
         int round = rc.getRoundNum();
