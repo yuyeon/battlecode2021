@@ -1,9 +1,9 @@
-package examplefuncsplayer;
+package geneticallymodifiedfreak;
 
 import battlecode.common.*;
 
-import static examplefuncsplayer.GameUtils.directions;
-import static examplefuncsplayer.GameUtils.spawnableRobot;
+import static geneticallymodifiedfreak.GameUtils.directions;
+import static geneticallymodifiedfreak.GameUtils.spawnableRobot;
 
 public strictfp class RobotPlayer {
     static RobotController rc;

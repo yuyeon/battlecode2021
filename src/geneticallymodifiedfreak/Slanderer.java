@@ -1,9 +1,9 @@
-package examplefuncsplayer;
+package geneticallymodifiedfreak;
 
 import battlecode.common.GameActionException;
 import battlecode.common.RobotController;
 
-import static examplefuncsplayer.RobotPlayer.randomDirection;
+import static geneticallymodifiedfreak.RobotPlayer.randomDirection;
 
 public class Slanderer extends GenericRobot {
     public Slanderer(RobotController rc) {
