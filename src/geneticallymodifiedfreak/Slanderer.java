@@ -9,8 +9,9 @@ import static geneticallymodifiedfreak.RobotPlayer.randomDirection;
 public class Slanderer extends GenericRobot {
     private HashSet<Integer> allies;
     private Team team;
-    int parentID;
-    int turnCount = 0;
+    private MapLocation nearestBoundary;
+    private int parentID;
+    private int turnCount = 0;
 
     public Slanderer(RobotController rc) {
         super(rc);
@@ -32,7 +33,8 @@ public class Slanderer extends GenericRobot {
 
     @Override
     void run() throws GameActionException {
-        Direction moveDir;
+        /*Direction moveDir = RobotPlayer.randomDirection();
+
         if(turnCount == 0){
             if(rc.canGetFlag(parentID)){
                 int flag = rc.getFlag(parentID);
@@ -45,22 +47,82 @@ public class Slanderer extends GenericRobot {
                     }
                 }
                 else {
-                    MapLocation boundary
+                    nearestBoundary = getLocation(flag);
+                }
+            }
+        }
+        else if (nearestBoundary == null) {
+            Direction check;
+
+            for (Direction dir : Direction.allDirections()) {
+                MapLocation adjTile = rc.getLocation().add(dir);
+                if (!rc.canDetectLocation(adjTile)) {
+                    nearestBoundary = adjTile;
+                }
+            }
+        }
+
+        if(nearestBoundary != null && rc.getLocation().distanceSquaredTo(nearestBoundary) == 0){
+            return;
+        }
+        else {
+            if(rc.canMove(moveDir)){
+                rc.move(moveDir);
+            }
+        }*/
+
+        RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
+        int avgX = 0;
+        int avgY = 0;
+        int enemies = 0;
+
+        for(RobotInfo nearbyRobot : nearbyRobots){
+            if(nearbyRobot.team != team) {
+                enemies++;
+                MapLocation enemyLoc = nearbyRobot.location;
+                avgX += enemyLoc.x;
+                avgY += enemyLoc.y;
+            }
+        }
+
+        avgX = avgX / enemies;
+        avgY = avgY / enemies;
+
+        MapLocation curr = rc.getLocation();
+
+        if(avgX > 0 || avgY > 0){
+            MapLocation avgLoc = new MapLocation(avgX, avgY);
+
+            MapLocation temp = curr.subtract(curr.directionTo(avgLoc));
+            MapLocation toMove = new MapLocation(temp.x + 4, temp.x + 4);
+
+            Direction step = pathfind(toMove);
+
+            if(step != null) rc.move(step);
+        }
+        else {
+            MapLocation edgeCheck;
+            for(int i = 0; i < 4; i++){
+                switch(i){
+                    case 0: edgeCheck = new MapLocation(curr.x + 4, curr.y);
+                    case 1: edgeCheck = new MapLocation(curr.x - 4, curr.y);
+                    case 2: edgeCheck = new MapLocation(curr.x, curr.y + 4);
+                    case 3: edgeCheck = new MapLocation(curr.x, curr.y - 4);
+                    default: edgeCheck = curr;
+                }
+
+                if(!rc.canDetectLocation(edgeCheck)){
+                    nearestBoundary = edgeCheck;
+
+                    Direction step = pathfind(edgeCheck);
+
+                    if(step != null) rc.move(step);
+                    break;
                 }
             }
         }
 
         turnCount++;
-
-        RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
-
-        for(RobotInfo nearbyRobot : nearbyRobots){
-
-        }
-    }
-
-    void findParent(){
-
     }
 
     /**
@@ -76,7 +138,7 @@ public class Slanderer extends GenericRobot {
         }
     }
 
-    static final int BITS = 7;
+    final int BITS = 7;
 
     /**
      * Decodes location from given flag.
@@ -118,5 +180,47 @@ public class Slanderer extends GenericRobot {
     public boolean enemyAt(int flag){
         int first = flag >> 23;
         return (flag == 1);
+    }
+
+    public Direction pathfind(MapLocation target) throws GameActionException {
+        MapLocation curr = rc.getLocation();
+        Direction step = curr.directionTo(target);
+        Direction temp = step;
+        MapLocation afterStep = curr.add(step);
+
+        int distSquared = target.distanceSquaredTo(afterStep);
+        double dist = Math.sqrt(distSquared);
+        double estMinMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+        boolean canMove = rc.canMove(step);
+
+        for (int i = 0; i < 2; i++) {
+            temp = temp.rotateLeft();
+            afterStep = curr.add(temp);
+            dist = Math.sqrt(target.distanceSquaredTo(afterStep));
+            double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+            if ((estMoves < estMinMoves && rc.canMove(temp)) || (!canMove && rc.canMove(temp))) {
+                canMove = false;
+                estMinMoves = estMoves;
+                step = temp;
+            }
+        }
+
+        temp = curr.directionTo(target);
+
+        for (int j = 0; j < 2; j++) {
+            temp = step.rotateRight();
+            afterStep = curr.add(temp);
+            dist = Math.sqrt(target.distanceSquaredTo(afterStep));
+            double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+            if ((estMoves < estMinMoves && rc.canMove(temp)) || (!canMove && rc.canMove(temp))) {
+                canMove = false;
+                estMinMoves = estMoves;
+                step = temp;
+            }
+        }
+
+        if(!canMove) return null;
+
+        return step;
     }
 }
