@@ -153,6 +153,7 @@ public strictfp class RobotPlayer {
     static Direction pathfind(MapLocation target) throws GameActionException {
         MapLocation curr = rc.getLocation();
         Direction step = curr.directionTo(target);
+        Direction temp = step;
         MapLocation afterStep = curr.add(step);
 
         int distSquared = target.distanceSquaredTo(afterStep);
@@ -161,27 +162,32 @@ public strictfp class RobotPlayer {
         boolean canMove = rc.canMove(step);
 
         for (int i = 0; i < 2; i++) {
-            Direction temp = step.rotateLeft();
+            temp = temp.rotateLeft();
             afterStep = curr.add(temp);
             dist = Math.sqrt(target.distanceSquaredTo(afterStep));
             double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
-            if ((estMoves < estMinMoves && rc.canMove(step)) || canMove) {
+            if ((estMoves < estMinMoves && rc.canMove(temp)) || (!canMove && rc.canMove(temp))) {
                 canMove = false;
                 estMinMoves = estMoves;
                 step = temp;
             }
         }
 
+        temp = curr.directionTo(target);
+
         for (int j = 0; j < 2; j++) {
-            Direction temp = step.rotateRight();
+            temp = step.rotateRight();
             afterStep = curr.add(temp);
             dist = Math.sqrt(target.distanceSquaredTo(afterStep));
             double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
-            if (estMoves < estMinMoves && rc.canMove(step)) {
+            if ((estMoves < estMinMoves && rc.canMove(temp)) || (!canMove && rc.canMove(temp))) {
+                canMove = false;
                 estMinMoves = estMoves;
                 step = temp;
             }
         }
+
+        if(!canMove) return null;
 
         return step;
     }
