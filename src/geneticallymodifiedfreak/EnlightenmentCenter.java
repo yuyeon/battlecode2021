@@ -9,6 +9,7 @@ import static geneticallymodifiedfreak.GameUtils.*;
 
 public strictfp class EnlightenmentCenter extends GenericRobot {
     private static final Direction[] cardinals = Direction.cardinalDirections();
+    public static final int POL_SCOUTING_INF = 1, POL_NORMAL_INF = 100;
 
     private HashSet<Integer> scouts;
     private HashSet<Integer> enemies;
@@ -58,8 +59,8 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
             if(round % 10 == 0 || round % 10 == 1){
                 Direction spawnDir = RobotPlayer.randomDirection();
                 if(enemyDir != null) spawnDir = enemyDir;
-                if(rc.canBuildRobot(RobotType.POLITICIAN, spawnDir, 1000)){
-                    rc.buildRobot(RobotType.POLITICIAN, spawnDir, 1000); //build politician pair every 10 rounds
+                if(rc.canBuildRobot(RobotType.POLITICIAN, spawnDir, POL_NORMAL_INF)){
+                    rc.buildRobot(RobotType.POLITICIAN, spawnDir, POL_NORMAL_INF); //build politician pair every 10 rounds
                 }
             }
             else if(influence >= 949){
