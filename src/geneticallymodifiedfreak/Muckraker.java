@@ -2,11 +2,7 @@ package geneticallymodifiedfreak;
 
 import battlecode.common.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static geneticallymodifiedfreak.GameUtils.directions;
-import static geneticallymodifiedfreak.GameUtils.tryMove;
+import static geneticallymodifiedfreak.GameUtils.*;
 
 public class Muckraker extends GenericRobot {
     public Muckraker(RobotController rc) {
@@ -42,7 +38,7 @@ public class Muckraker extends GenericRobot {
         polMicroSpace(friendlies);
     }
 
-    private void polMicroSpace(RobotInfo[] friendlies) {
+    private void polMicroSpace(RobotInfo[] friendlies) throws GameActionException {
         MapLocation thisLoc = rc.getLocation();
         final int polActionRadius = RobotType.POLITICIAN.actionRadiusSquared,
                 polSensorRadius = RobotType.POLITICIAN.sensorRadiusSquared;
@@ -72,16 +68,22 @@ public class Muckraker extends GenericRobot {
             MapLocation avgDecLoc = new MapLocation(decXTotal / decCount, decYTotal / decCount);
             dirLoc = dirLoc.add(thisLoc.directionTo(avgDecLoc));
         }
+        if (thisLoc.equals(dirLoc)) {
+            return;
+        }
 
         Direction bestDir = thisLoc.directionTo(dirLoc);
-        if (rc.canMove(bestDir)) {
-            try {
-                rc.move(bestDir);
-            } catch (GameActionException e) {
-                e.printStackTrace();
+        if (tryMove(rc, bestDir)) {
+            return;
+        }
+        Direction pfDir = pathfind(rc, dirLoc);
+        if (tryMove(rc, pfDir)) {
+            return;
+        }
+        for (Direction dir : directions) {
+            if (dir != bestDir && dir != pfDir && tryMove(rc, dir)) {
+                return;
             }
-        } else {
-            // TODO: pathfind to next best direction
         }
     }
 }
