@@ -27,7 +27,7 @@ public strictfp class Politician extends GenericRobot {
 
         RobotInfo bestBadPolitician = null, worstFriendly = null, bestFriendly = null;
         for (RobotInfo friendly : friendlies) {
-            int fc = friendly.conviction;
+            int fc = friendly.getConviction();
             if (fc < CONVICTION_THRESHOLD && friendly.getType() == RobotType.POLITICIAN
                     && (bestBadPolitician == null || fc > bestBadPolitician.getConviction())) {
                 bestBadPolitician = friendly;
