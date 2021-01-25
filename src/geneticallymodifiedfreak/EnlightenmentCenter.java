@@ -13,6 +13,7 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
     private HashSet<Integer> enemies;
     private Team team;
     private int mode;
+    private Direction enemyDir;
 
 
     public EnlightenmentCenter(RobotController rc) {
@@ -47,8 +48,10 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
         }
         else if(round <= 500){
             if(round % 10 == 0 || round % 10 == 1){
-                if(rc.canBuildRobot(spawnableRobot[0], cardinals[round - 2], 100)){
-                    rc.buildRobot(spawnableRobot[0], cardinals[round - 2], 100); //build politician pair every 10 rounds
+                Direction spawnDir = RobotPlayer.randomDirection();
+                if(enemyDir != null) spawnDir = enemyDir;
+                if(rc.canBuildRobot(spawnableRobot[0], spawnDir, 100)){
+                    rc.buildRobot(spawnableRobot[0], spawnDir, 100); //build politician pair every 10 rounds
                 }
             }
             else if(influence <= 949){
@@ -74,9 +77,9 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
         for(Integer robotID : allies){
             if(rc.canGetFlag(robotID)){
                 int flag = rc.getFlag(robotID);
-
                 if(enemyAt(flag)){
                     MapLocation enemyLoc = getLocation(flag);
+                    enemyDir = rc.getLocation().directionTo(enemyLoc);
                 }
             }
             else {

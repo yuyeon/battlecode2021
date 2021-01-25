@@ -24,32 +24,32 @@ public strictfp class RobotPlayer {
 
         turnCount = 0;
 
-        System.out.println("I'm a " + rc.getType() + " and I just got created!");
+        GenericRobot robot = null;
+        switch (rc.getType()) {
+            case ENLIGHTENMENT_CENTER:
+                robot = new EnlightenmentCenter(rc);
+                break;
+            case POLITICIAN:
+                robot = new Politician(rc);
+                break;
+            case SLANDERER:
+                robot = new Slanderer(rc);
+                break;
+            case MUCKRAKER:
+                robot = new Muckraker(rc);
+                break;
+        }
+
+        if(robot == null) return;
+
         while (true) {
             turnCount += 1;
             // Try/catch blocks stop unhandled exceptions, which cause your robot to freeze
             try {
                 // Here, we've separated the controls into a different method for each RobotType.
                 // You may rewrite this into your own control structure if you wish.
-                System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
-                GenericRobot robot = null;
-                switch (rc.getType()) {
-                    case ENLIGHTENMENT_CENTER:
-                        robot = new EnlightenmentCenter(rc);
-                        break;
-                    case POLITICIAN:
-                        robot = new Politician(rc);
-                        break;
-                    case SLANDERER:
-                        robot = new Slanderer(rc);
-                        break;
-                    case MUCKRAKER:
-                        robot = new Muckraker(rc);
-                        break;
-                }
-                if (robot != null) {
-                    robot.run();
-                }
+
+                robot.run();
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 Clock.yield();
