@@ -87,8 +87,8 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
             else if(round % 8 == 2){
                 Direction spawnDir = randomDirection();
                 if(enemyDir != null) spawnDir = enemyDir;
-                if(rc.canBuildRobot(RobotType.MUCKRAKER, spawnDir, POL_SCOUTING_INF)){
-                    rc.buildRobot(RobotType.MUCKRAKER, spawnDir, POL_SCOUTING_INF); //build politician pair every 10 rounds
+                if(rc.canBuildRobot(RobotType.POLITICIAN, spawnDir, POL_SCOUTING_INF)){
+                    rc.buildRobot(RobotType.POLITICIAN, spawnDir, POL_SCOUTING_INF); //build politician pair every 10 rounds
                 }
             }
             else if(influence >= 949){

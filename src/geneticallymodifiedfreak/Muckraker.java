@@ -6,11 +6,26 @@ import static geneticallymodifiedfreak.GameUtils.*;
 
 public class Muckraker extends GenericRobot {
     private final int actionRadius, sensorRadius;
+    private Team team;
+    private MapLocation parentLoc;
+    private int parentID;
 
     public Muckraker(RobotController rc) {
         super(rc);
         this.actionRadius = rc.getType().actionRadiusSquared;
         this.sensorRadius = rc.getType().sensorRadiusSquared;
+
+        team = this.rc.getTeam();
+
+        RobotInfo[] nearbyRobots = this.rc.senseNearbyRobots();
+
+        for(RobotInfo nearbyRobot : nearbyRobots) {
+            int id = nearbyRobot.getID();
+            if (nearbyRobot.team.equals(team) && nearbyRobot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
+                parentID = id;
+                parentLoc = nearbyRobot.location;
+            }
+        }
     }
 
     @Override
@@ -23,6 +38,19 @@ public class Muckraker extends GenericRobot {
         if (tryAttack(enemies) || polMicroSpace(friendlies)) {
             return;
         }
+
+        MapLocation curr = rc.getLocation();
+        MapLocation temp = curr.subtract(curr.directionTo(parentLoc));
+
+        Direction step = curr.directionTo(temp);
+
+        int ind = 0;
+
+        while(!rc.canMove(step) && ind++ < 8){
+            step = step.rotateRight();
+        }
+
+        if(rc.canMove(step)) rc.move(step);
     }
 
 
