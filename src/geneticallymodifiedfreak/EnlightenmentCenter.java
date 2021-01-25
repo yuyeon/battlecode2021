@@ -64,10 +64,10 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
         RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
 
         for(RobotInfo robot : nearbyRobots){
-            if(robot.team == team && !allies.contains(robot.ID)){
+            if(robot.team.equals(team) && !allies.contains(robot.ID)){
                 allies.add(robot.ID);
             }
-            else if(robot.team == team.opponent() && !enemies.contains(robot.ID) ){
+            else if(robot.team.equals(team.opponent()) && !enemies.contains(robot.ID) ){
                 enemies.add(robot.ID);
             }
         }
