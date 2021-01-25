@@ -89,6 +89,8 @@ public class GameUtils {
     }
 
     static Direction pathfind(RobotController rc, MapLocation target) throws GameActionException {
+        if(rc.getLocation().compareTo(target) == 0) return null;
+
         MapLocation curr = rc.getLocation();
         Direction step = curr.directionTo(target);
         Direction temp = step;
