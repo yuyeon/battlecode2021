@@ -10,7 +10,7 @@ import static geneticallymodifiedfreak.GameUtils.*;
 public strictfp class EnlightenmentCenter extends GenericRobot {
     private static final Direction[] cardinals = Direction.cardinalDirections();
 
-    private HashSet<Integer> allies;
+    private HashSet<Integer> scouts;
     private HashSet<Integer> enemies;
     private Team team;
     private int mode;
@@ -19,7 +19,7 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
 
     public EnlightenmentCenter(RobotController rc) {
         super(rc);
-        allies = new HashSet<>();
+        scouts = new HashSet<>();
         team = rc.getTeam();
         mode = 0;
     }
@@ -29,7 +29,7 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
         int influence = rc.getInfluence();
         int round = rc.getRoundNum();
 
-        if(round <= 100){ // very early game
+        if(round <= 80){ // very early game
             if(round == 1){
                 rc.setFlag(0); //Set flag to 0 for scouting mode
                 if(rc.canBuildRobot(RobotType.SLANDERER, Direction.NORTH, influence)){
@@ -39,6 +39,13 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
             else if(round <= 5){
                 if(rc.canBuildRobot(RobotType.POLITICIAN, cardinals[round - 2], 1)){
                     rc.buildRobot(RobotType.POLITICIAN, cardinals[round - 2], 1); //build politician in each direction for scouting
+                    RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
+
+                    for(RobotInfo nearbyRobot : nearbyRobots){
+                        if(nearbyRobot.influence == 1 && !scouts.contains(nearbyRobot.ID)){
+                            scouts.add(nearbyRobot.ID);
+                        }
+                    }
                 }
             }
             else if(influence >= 85){
@@ -47,24 +54,26 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
                 }
             }
         }
-        else if(round <= 750){
+        else if(round <= 400){
             if(round % 10 == 0 || round % 10 == 1){
                 Direction spawnDir = RobotPlayer.randomDirection();
                 if(enemyDir != null) spawnDir = enemyDir;
-                if(rc.canBuildRobot(RobotType.POLITICIAN, spawnDir, 100)){
-                    rc.buildRobot(RobotType.POLITICIAN, spawnDir, 100); //build politician pair every 10 rounds
+                if(rc.canBuildRobot(RobotType.POLITICIAN, spawnDir, 1000)){
+                    rc.buildRobot(RobotType.POLITICIAN, spawnDir, 1000); //build politician pair every 10 rounds
                 }
             }
-            else if(influence <= 949){
+            else if(influence >= 949){
                 if(rc.canBuildRobot(RobotType.SLANDERER, Direction.NORTHEAST, 949)){
                     rc.buildRobot(RobotType.SLANDERER, Direction.NORTHEAST, 949); //build slanderer whenever possible
                 }
             }
         }
 
-        RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
+        for(Integer scoutID : scouts){
 
-        for(RobotInfo robot : nearbyRobots){
+        }
+
+        /*for(RobotInfo robot : nearbyRobots){
             if(robot.team.equals(team) && !allies.contains(robot.ID)){
                 allies.add(robot.ID);
             }
@@ -73,7 +82,7 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
             }
         }
 
-        // int bytecodes = Clock.getBytecodesLeft();
+        int bytecodes = Clock.getBytecodesLeft();
 
         LinkedList<Integer> deadAllies = new LinkedList<Integer>();
 
@@ -92,6 +101,6 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
 
         for(Integer deadAlly : deadAllies){
             allies.remove(deadAlly);
-        }
+        }*/
     }
 }

@@ -75,7 +75,7 @@ public strictfp class Politician extends GenericRobot {
 
     private boolean isScouting() {
         // TODO: return scouting
-        return false;
+        return rc.getInfluence() == 1;
     }
 
     private static boolean shouldKms(int conviction, RobotInfo bestFriendly) {
