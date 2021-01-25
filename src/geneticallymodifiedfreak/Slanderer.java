@@ -102,23 +102,31 @@ public class Slanderer extends GenericRobot {
             if(step != null) rc.move(step);
         }
         else {
-            MapLocation edgeCheck;
+            MapLocation edgeCheck = curr;
+
             for(int i = 0; i < 4; i++){
                 switch(i){
                     case 0: edgeCheck = new MapLocation(curr.x + 4, curr.y);
                     case 1: edgeCheck = new MapLocation(curr.x - 4, curr.y);
                     case 2: edgeCheck = new MapLocation(curr.x, curr.y + 4);
                     case 3: edgeCheck = new MapLocation(curr.x, curr.y - 4);
-                    default: edgeCheck = curr;
                 }
 
                 if(!rc.canDetectLocation(edgeCheck)){
                     nearestBoundary = edgeCheck;
-
-                    Direction step = pathfind(rc, edgeCheck);
-
-                    if(step != null) rc.move(step);
                     break;
+                }
+            }
+
+            if(edgeCheck != curr){
+                Direction step = pathfind(rc, edgeCheck);
+
+                if(step != null) rc.move(step);
+            }
+            else {
+                Direction dir = randomDirection();
+                if(rc.canMove(dir)){
+                    rc.move(dir);
                 }
             }
         }
