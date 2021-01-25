@@ -3,6 +3,7 @@ package geneticallymodifiedfreak;
 import battlecode.common.*;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import static geneticallymodifiedfreak.GameUtils.*;
 
@@ -75,6 +76,8 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
 
         // int bytecodes = Clock.getBytecodesLeft();
 
+        LinkedList<Integer> deadAllies = new LinkedList<Integer>();
+
         for(Integer robotID : allies){
             if(rc.canGetFlag(robotID)){
                 int flag = rc.getFlag(robotID);
@@ -84,8 +87,12 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
                 }
             }
             else {
-                allies.remove(robotID);
+                deadAllies.add(robotID);
             }
+        }
+
+        for(Integer deadAlly : deadAllies){
+            allies.remove(deadAlly);
         }
     }
 }
