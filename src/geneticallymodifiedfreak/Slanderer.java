@@ -93,12 +93,17 @@ public class Slanderer extends GenericRobot {
             }
         }
 
-        avgX = avgX / enemies;
-        avgY = avgY / enemies;
+        if(enemies > 0) {
+            avgX = avgX / enemies;
+            avgY = avgY / enemies;
+        }
+
+        System.out.println("HIIIII");
 
         if(curr.distanceSquaredTo(parentLoc) <= 5){
             MapLocation temp = curr.subtract(curr.directionTo(parentLoc));
             Direction step = curr.directionTo(temp);
+            System.out.println("I LOVE JISOO");
 
             int ind = 0;
 
