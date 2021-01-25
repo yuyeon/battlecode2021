@@ -2,6 +2,8 @@ package geneticallymodifiedfreak;
 
 import battlecode.common.*;
 
+import java.util.Random;
+
 import static geneticallymodifiedfreak.GameUtils.directions;
 import static geneticallymodifiedfreak.GameUtils.spawnableRobot;
 
@@ -59,13 +61,14 @@ public strictfp class RobotPlayer {
         }
     }
 
+    private static final Random random = new Random(1);
     /**
      * Returns a random Direction.
      *
      * @return a random Direction
      */
     static Direction randomDirection() {
-        return directions[(int) (Math.random() * directions.length)];
+        return directions[(int) (random.nextDouble() * directions.length)];
     }
 
     /**

@@ -4,7 +4,7 @@ import battlecode.common.*;
 
 public strictfp class Politician extends GenericRobot {
 
-    private static final int CONVICTION_THRESHOLD = 10;
+    private static final int CONVICTION_THRESHOLD = 10, EMPOWER_COST = 10;
 
     public Politician(RobotController rc) {
         super(rc);
@@ -20,9 +20,10 @@ public strictfp class Politician extends GenericRobot {
         boolean canEmpower = rc.canEmpower(actionRadius);
         int empowerNum = friendlies.length + enemies.length;
         int conviction = rc.getConviction();
-        int convictionReceivedIfEmpowered = conviction / empowerNum;
+        int convictionReceivedIfEmpowered = (conviction - EMPOWER_COST) / empowerNum;
 
         // TODO: if no robots are present, maybe move?
+        // TODO: strategy, if enemy in sensing distance, don't move
 
         RobotInfo bestBadPolitician = null, worstFriendly = null, bestFriendly = null;
         for (RobotInfo friendly : friendlies) {
