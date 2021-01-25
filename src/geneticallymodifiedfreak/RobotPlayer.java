@@ -72,30 +72,6 @@ public strictfp class RobotPlayer {
     }
 
     /**
-     * Returns a random spawnable RobotType
-     *
-     * @return a random RobotType
-     */
-    static RobotType randomSpawnableRobotType() {
-        return spawnableRobot[(int) (Math.random() * spawnableRobot.length)];
-    }
-
-    /**
-     * Attempts to move in a given direction.
-     *
-     * @param dir The intended direction of movement
-     * @return true if a move was performed
-     * @throws GameActionException
-     */
-    static boolean tryMove(Direction dir) throws GameActionException {
-        System.out.println("I am trying to move " + dir + "; " + rc.isReady() + " " + rc.getCooldownTurns() + " " + rc.canMove(dir));
-        if (rc.canMove(dir)) {
-            rc.move(dir);
-            return true;
-        } else return false;
-    }
-
-    /**
      * Encodes location into flag, using the rightmost 14 bits. The remaining leftmost bits are used to encode any
      * other information.
      **/
