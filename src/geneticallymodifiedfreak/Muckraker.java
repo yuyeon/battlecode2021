@@ -1,11 +1,11 @@
-package examplefuncsplayer;
+package geneticallymodifiedfreak;
 
 import battlecode.common.GameActionException;
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
 import battlecode.common.Team;
 
-import static examplefuncsplayer.RobotPlayer.randomDirection;
+import static geneticallymodifiedfreak.RobotPlayer.randomDirection;
 
 public class Muckraker extends GenericRobot {
     public Muckraker(RobotController rc) {
