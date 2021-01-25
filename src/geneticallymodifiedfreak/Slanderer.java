@@ -80,6 +80,8 @@ public class Slanderer extends GenericRobot {
         int avgX = 0;
         int avgY = 0;
         int enemies = 0;
+        int distanceToClosestAlly = Integer.MAX_VALUE;
+        MapLocation closestAlly = curr;
 
         for(RobotInfo nearbyRobot : nearbyRobots){
             if(!nearbyRobot.team.equals(team)) {
@@ -89,7 +91,11 @@ public class Slanderer extends GenericRobot {
                 avgY += enemyLoc.y;
             }
             else {
-
+                int dist = curr.distanceSquaredTo(nearbyRobot.location);
+                if(dist < distanceToClosestAlly){
+                    closestAlly = nearbyRobot.location;
+                    distanceToClosestAlly = dist;
+                }
             }
         }
 
@@ -98,12 +104,9 @@ public class Slanderer extends GenericRobot {
             avgY = avgY / enemies;
         }
 
-        System.out.println("HIIIII");
-
-        if(curr.distanceSquaredTo(parentLoc) <= 5){
-            MapLocation temp = curr.subtract(curr.directionTo(parentLoc));
+        if(distanceToClosestAlly <= 5 && closestAlly != curr){
+            MapLocation temp = curr.subtract(curr.directionTo(closestAlly));
             Direction step = curr.directionTo(temp);
-            System.out.println("I LOVE JISOO");
 
             int ind = 0;
 
@@ -111,7 +114,7 @@ public class Slanderer extends GenericRobot {
                 step = step.rotateRight();
             }
 
-            rc.move(step);
+            if(rc.canMove(step)) rc.move(step);
         }
         else if(avgX > 0 || avgY > 0){
             MapLocation avgLoc = new MapLocation(avgX, avgY);

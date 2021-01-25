@@ -46,7 +46,7 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
                 }
             }
         }
-        else if(round <= 500){
+        else if(round <= 750){
             if(round % 10 == 0 || round % 10 == 1){
                 Direction spawnDir = RobotPlayer.randomDirection();
                 if(enemyDir != null) spawnDir = enemyDir;

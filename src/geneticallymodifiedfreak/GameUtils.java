@@ -98,14 +98,20 @@ public class GameUtils {
 
         int distSquared = target.distanceSquaredTo(afterStep);
         double dist = Math.sqrt(distSquared);
-        double estMinMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+        double estMinMoves = Integer.MAX_VALUE;
+        if(rc.canSenseLocation(afterStep)) {
+            estMinMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+        }
         boolean canMove = rc.canMove(step);
 
         for (int i = 0; i < 2; i++) {
             temp = temp.rotateLeft();
             afterStep = curr.add(temp);
             dist = Math.sqrt(target.distanceSquaredTo(afterStep));
-            double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+            double estMoves = Integer.MAX_VALUE;
+            if(rc.canSenseLocation(afterStep)) {
+                estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+            }
             if ((estMoves < estMinMoves && rc.canMove(temp)) || (!canMove && rc.canMove(temp))) {
                 canMove = false;
                 estMinMoves = estMoves;
@@ -119,7 +125,10 @@ public class GameUtils {
             temp = step.rotateRight();
             afterStep = curr.add(temp);
             dist = Math.sqrt(target.distanceSquaredTo(afterStep));
-            double estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+            double estMoves = Integer.MAX_VALUE;
+            if(rc.canSenseLocation(afterStep)) {
+                estMoves = dist * Math.sqrt(2) + (2.0 / rc.sensePassability(afterStep));
+            }
             if ((estMoves < estMinMoves && rc.canMove(temp)) || (!canMove && rc.canMove(temp))) {
                 canMove = false;
                 estMinMoves = estMoves;
