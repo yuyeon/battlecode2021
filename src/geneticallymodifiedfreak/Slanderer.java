@@ -11,20 +11,22 @@ public class Slanderer extends GenericRobot {
     private HashSet<Integer> allies;
     private Team team;
     private MapLocation nearestBoundary;
+    private MapLocation parentLoc;
     private int parentID;
     private int turnCount = 0;
 
     public Slanderer(RobotController rc) {
         super(rc);
         allies = new HashSet<>();
-        team = rc.getTeam();
+        team = this.rc.getTeam();
 
         RobotInfo[] nearbyRobots = this.rc.senseNearbyRobots();
 
         for(RobotInfo nearbyRobot : nearbyRobots){
             int id = nearbyRobot.getID();
-            if(nearbyRobot.team == team && nearbyRobot.type == RobotType.ENLIGHTENMENT_CENTER){
+            if(nearbyRobot.team.equals(team) && nearbyRobot.type.equals(RobotType.ENLIGHTENMENT_CENTER)){
                 parentID = id;
+                parentLoc = nearbyRobot.location;
             }
             else if(nearbyRobot.team == team){
                 allies.add(id);
@@ -72,26 +74,46 @@ public class Slanderer extends GenericRobot {
             }
         }*/
 
+        MapLocation curr = rc.getLocation();
+
         RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
         int avgX = 0;
         int avgY = 0;
         int enemies = 0;
 
         for(RobotInfo nearbyRobot : nearbyRobots){
-            if(nearbyRobot.team != team) {
+            if(!nearbyRobot.team.equals(team)) {
                 enemies++;
                 MapLocation enemyLoc = nearbyRobot.location;
                 avgX += enemyLoc.x;
                 avgY += enemyLoc.y;
             }
+            else {
+
+            }
         }
 
-        avgX = avgX / enemies;
-        avgY = avgY / enemies;
+        if(enemies > 0) {
+            avgX = avgX / enemies;
+            avgY = avgY / enemies;
+        }
 
-        MapLocation curr = rc.getLocation();
+        System.out.println("HIIIII");
 
-        if(avgX > 0 || avgY > 0){
+        if(curr.distanceSquaredTo(parentLoc) <= 5){
+            MapLocation temp = curr.subtract(curr.directionTo(parentLoc));
+            Direction step = curr.directionTo(temp);
+            System.out.println("I LOVE JISOO");
+
+            int ind = 0;
+
+            while(!rc.canMove(step) && ind++ < 8){
+                step = step.rotateRight();
+            }
+
+            rc.move(step);
+        }
+        else if(avgX > 0 || avgY > 0){
             MapLocation avgLoc = new MapLocation(avgX, avgY);
 
             MapLocation temp = curr.subtract(curr.directionTo(avgLoc));
