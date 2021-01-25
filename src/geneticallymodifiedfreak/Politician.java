@@ -12,6 +12,18 @@ public strictfp class Politician extends GenericRobot {
 
     @Override
     public void run() throws GameActionException {
+        if (isScouting()) {
+            scoutingRun();
+        } else {
+            normalRun();
+        }
+    }
+
+    private void scoutingRun() {
+        // TODO: scouting
+    }
+
+    private void normalRun() throws GameActionException {
         int actionRadius = rc.getType().actionRadiusSquared;
         Team team = rc.getTeam();
         RobotInfo[] friendlies = rc.senseNearbyRobots(actionRadius, team);
@@ -59,6 +71,11 @@ public strictfp class Politician extends GenericRobot {
         }
 
         // TODO: implement flight (run away) logic
+    }
+
+    private boolean isScouting() {
+        // TODO: return scouting
+        return false;
     }
 
     private static boolean shouldKms(int conviction, RobotInfo bestFriendly) {

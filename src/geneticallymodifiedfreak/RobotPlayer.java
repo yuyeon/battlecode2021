@@ -5,7 +5,6 @@ import battlecode.common.*;
 import java.util.Random;
 
 import static geneticallymodifiedfreak.GameUtils.directions;
-import static geneticallymodifiedfreak.GameUtils.spawnableRobot;
 
 public strictfp class RobotPlayer {
     static RobotController rc;

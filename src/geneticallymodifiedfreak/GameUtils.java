@@ -3,11 +3,11 @@ package geneticallymodifiedfreak;
 import battlecode.common.*;
 
 public class GameUtils {
-    public static final RobotType[] spawnableRobot = {
-            RobotType.POLITICIAN,
-            RobotType.SLANDERER,
-            RobotType.MUCKRAKER,
-    };
+//    public static final RobotType[] spawnableRobot = {
+//            RobotType.POLITICIAN,
+//            RobotType.SLANDERER,
+//            RobotType.MUCKRAKER,
+//    };
 
     public static final Direction[] directions = {
             Direction.NORTH,
