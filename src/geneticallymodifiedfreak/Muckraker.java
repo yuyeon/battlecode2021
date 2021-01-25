@@ -5,40 +5,67 @@ import battlecode.common.*;
 import static geneticallymodifiedfreak.GameUtils.*;
 
 public class Muckraker extends GenericRobot {
+    private final int actionRadius, sensorRadius;
+
     public Muckraker(RobotController rc) {
         super(rc);
+        this.actionRadius = rc.getType().actionRadiusSquared;
+        this.sensorRadius = rc.getType().sensorRadiusSquared;
     }
 
     @Override
     void run() throws GameActionException {
-        RobotType thisType = rc.getType();
-        MapLocation thisLoc = rc.getLocation();
-        int actionRadius = thisType.actionRadiusSquared;
-        int sensorRadius = thisType.sensorRadiusSquared;
-
-        // slanderers, slanderers everywhere
         Team opponent = rc.getTeam().opponent();
-        RobotInfo[] enemies = rc.senseNearbyRobots(actionRadius, opponent);
+        RobotInfo[] enemies = rc.senseNearbyRobots(sensorRadius, opponent);
+        Team team = rc.getTeam();
+        RobotInfo[] friendlies = rc.senseNearbyRobots(sensorRadius, team);
+
+        if (tryAttack(enemies) || polMicroSpace(friendlies)) {
+            return;
+        }
+    }
+
+
+    private boolean tryAttack(RobotInfo[] enemies) throws GameActionException {
+        MapLocation thisLoc = rc.getLocation();
         RobotInfo bestEnemySlanderer = null;
+        int incXTotal = 0, incYTotal = 0, incCount = 0, decXTotal = 0, decYTotal = 0, decCount = 0;
+        boolean hardEscape = false;
         for (RobotInfo enemy : enemies) {
-            int ei = enemy.getInfluence();
-            if (enemy.getType().canBeExposed()
-                    && (bestEnemySlanderer == null || ei > bestEnemySlanderer.getInfluence())) {
+            int eInf = enemy.getInfluence(), eConv = enemy.getConviction();
+            RobotType eType = enemy.getType();
+            MapLocation eLoc = enemy.getLocation();
+            if (eType.canBeExposed()
+                    && thisLoc.isWithinDistanceSquared(eLoc, actionRadius)
+                    && (bestEnemySlanderer == null || eInf > bestEnemySlanderer.getInfluence())) {
                 bestEnemySlanderer = enemy;
+            } else if (eType == RobotType.SLANDERER) {
+                decXTotal += eLoc.x;
+                decYTotal += eLoc.y;
+                decCount++;
+            } else if (eType == RobotType.POLITICIAN
+                    && thisLoc.isWithinDistanceSquared(eLoc, eType.sensorRadiusSquared)
+                    && eConv >= rc.getConviction()) {
+                if (thisLoc.isWithinDistanceSquared(eLoc, eType.actionRadiusSquared)) {
+                    hardEscape = true;
+                }
+                incXTotal += eLoc.x;
+                incYTotal += eLoc.y;
+                incCount++;
             }
         }
         if (bestEnemySlanderer != null && rc.canExpose(bestEnemySlanderer.getLocation())) {
             rc.expose(bestEnemySlanderer.getLocation());
-            return;
+            return true;
+        } else if (hardEscape) {
+            return optimizeDistanceFrom(incXTotal, incYTotal, incCount, 0, 0, 0);
+        } else if (incCount != 0 || decCount != 0) {
+            return optimizeDistanceFrom(incXTotal, incYTotal, incCount, decXTotal, decYTotal, decCount);
         }
-
-        // politician micro space / combat
-        Team team = rc.getTeam();
-        RobotInfo[] friendlies = rc.senseNearbyRobots(sensorRadius, team);
-        polMicroSpace(friendlies);
+        return false;
     }
 
-    private void polMicroSpace(RobotInfo[] friendlies) throws GameActionException {
+    private boolean polMicroSpace(RobotInfo[] friendlies) throws GameActionException {
         MapLocation thisLoc = rc.getLocation();
         final int polActionRadius = RobotType.POLITICIAN.actionRadiusSquared,
                 polSensorRadius = RobotType.POLITICIAN.sensorRadiusSquared;
@@ -59,31 +86,37 @@ public class Muckraker extends GenericRobot {
             }
         }
 
+        return optimizeDistanceFrom(incXTotal, incYTotal, incCount, decXTotal, decYTotal, decCount);
+    }
+
+    private boolean optimizeDistanceFrom(
+            int incXTotal, int incYTotal, int incCount, int decXTotal, int decYTotal, int decCount
+    ) throws GameActionException {
+        MapLocation avgIncLoc = incCount != 0 ? new MapLocation(incXTotal / incCount, incYTotal / incCount) : null;
+        MapLocation avgDecLoc = decCount != 0 ? new MapLocation(decXTotal / decCount, decYTotal / decCount) : null;
+        return optimizeDistanceFrom(avgIncLoc, avgDecLoc);
+    }
+
+    private boolean optimizeDistanceFrom(MapLocation avgIncLoc, MapLocation avgDecLoc) throws GameActionException {
+        MapLocation thisLoc = rc.getLocation();
         MapLocation dirLoc = thisLoc;
-        if (incCount != 0) {
-            MapLocation avgIncLoc = new MapLocation(incXTotal / incCount, incYTotal / incCount);
+        if (avgIncLoc != null) {
             dirLoc = dirLoc.add(avgIncLoc.directionTo(thisLoc));
         }
-        if (decCount != 0) {
-            MapLocation avgDecLoc = new MapLocation(decXTotal / decCount, decYTotal / decCount);
+        if (avgDecLoc != null) {
             dirLoc = dirLoc.add(thisLoc.directionTo(avgDecLoc));
         }
         if (thisLoc.equals(dirLoc)) {
-            return;
+            return false;
         }
 
         Direction bestDir = thisLoc.directionTo(dirLoc);
-        if (tryMove(rc, bestDir)) {
-            return;
-        }
-        Direction pfDir = pathfind(rc, dirLoc);
-        if (pfDir != null && tryMove(rc, pfDir)) {
-            return;
-        }
-        for (Direction dir : directions) {
-            if (dir != bestDir && dir != pfDir && tryMove(rc, dir)) {
-                return;
-            }
-        }
+        Direction left = bestDir.rotateLeft();
+        Direction right = bestDir.rotateRight();
+        return tryMove(rc, bestDir)
+                || tryMove(rc, left)
+                || tryMove(rc, right)
+                || tryMove(rc, left.rotateLeft())
+                || tryMove(rc, right.rotateRight());
     }
 }

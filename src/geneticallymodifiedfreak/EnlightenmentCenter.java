@@ -31,18 +31,18 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
         if(round <= 100){ // very early game
             if(round == 1){
                 rc.setFlag(0); //Set flag to 0 for scouting mode
-                if(rc.canBuildRobot(spawnableRobot[1], Direction.NORTH, influence)){
-                    rc.buildRobot(spawnableRobot[1], Direction.NORTH, influence); //build slanderer 1st turn
+                if(rc.canBuildRobot(RobotType.SLANDERER, Direction.NORTH, influence)){
+                    rc.buildRobot(RobotType.SLANDERER, Direction.NORTH, influence); //build slanderer 1st turn
                 }
             }
             else if(round <= 5){
-                if(rc.canBuildRobot(spawnableRobot[0], cardinals[round - 2], 1)){
-                    rc.buildRobot(spawnableRobot[0], cardinals[round - 2], 1); //build politician in each direction for scouting
+                if(rc.canBuildRobot(RobotType.POLITICIAN, cardinals[round - 2], 1)){
+                    rc.buildRobot(RobotType.POLITICIAN, cardinals[round - 2], 1); //build politician in each direction for scouting
                 }
             }
             else if(influence >= 85){
-                if(rc.canBuildRobot(spawnableRobot[1], Direction.NORTHEAST, 85)){
-                    rc.buildRobot(spawnableRobot[1], Direction.NORTHEAST, 85); //build slanderer whenever possible
+                if(rc.canBuildRobot(RobotType.SLANDERER, Direction.NORTHEAST, 85)){
+                    rc.buildRobot(RobotType.SLANDERER, Direction.NORTHEAST, 85); //build slanderer whenever possible
                 }
             }
         }
@@ -50,13 +50,13 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
             if(round % 10 == 0 || round % 10 == 1){
                 Direction spawnDir = RobotPlayer.randomDirection();
                 if(enemyDir != null) spawnDir = enemyDir;
-                if(rc.canBuildRobot(spawnableRobot[0], spawnDir, 100)){
-                    rc.buildRobot(spawnableRobot[0], spawnDir, 100); //build politician pair every 10 rounds
+                if(rc.canBuildRobot(RobotType.POLITICIAN, spawnDir, 100)){
+                    rc.buildRobot(RobotType.POLITICIAN, spawnDir, 100); //build politician pair every 10 rounds
                 }
             }
             else if(influence <= 949){
-                if(rc.canBuildRobot(spawnableRobot[1], Direction.NORTHEAST, 949)){
-                    rc.buildRobot(spawnableRobot[1], Direction.NORTHEAST, 949); //build slanderer whenever possible
+                if(rc.canBuildRobot(RobotType.SLANDERER, Direction.NORTHEAST, 949)){
+                    rc.buildRobot(RobotType.SLANDERER, Direction.NORTHEAST, 949); //build slanderer whenever possible
                 }
             }
         }
