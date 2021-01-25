@@ -9,7 +9,7 @@ import static geneticallymodifiedfreak.GameUtils.*;
 
 public strictfp class EnlightenmentCenter extends GenericRobot {
     private static final Direction[] cardinals = Direction.cardinalDirections();
-    public static final int POL_SCOUTING_INF = 1, POL_NORMAL_INF = 100;
+    public static final int POL_SCOUTING_INF = 1, POL_NORMAL_INF = 1000;
 
     private HashSet<Integer> scouts;
     private HashSet<Integer> enemies;
@@ -55,9 +55,9 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
                 }
             }
         }
-        else if(round <= 400){
+        else if(round <= 500){
             if(round % 10 == 0 || round % 10 == 1){
-                Direction spawnDir = RobotPlayer.randomDirection();
+                Direction spawnDir = randomDirection();
                 if(enemyDir != null) spawnDir = enemyDir;
                 if(rc.canBuildRobot(RobotType.POLITICIAN, spawnDir, POL_NORMAL_INF)){
                     rc.buildRobot(RobotType.POLITICIAN, spawnDir, POL_NORMAL_INF); //build politician pair every 10 rounds
@@ -69,9 +69,52 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
                 }
             }
         }
+        else {
+            if(round % 4 == 0){
+                Direction spawnDir = randomDirection();
+                if(enemyDir != null) spawnDir = enemyDir;
+                if(rc.canBuildRobot(RobotType.POLITICIAN, spawnDir, POL_NORMAL_INF)){
+                    rc.buildRobot(RobotType.POLITICIAN, spawnDir, POL_NORMAL_INF); //build politician pair every 10 rounds
+                }
+            }
+            else if(round % 4 == 1){
+                Direction spawnDir = randomDirection();
+                if(enemyDir != null) spawnDir = enemyDir;
+                if(rc.canBuildRobot(RobotType.MUCKRAKER, spawnDir, POL_NORMAL_INF)){
+                    rc.buildRobot(RobotType.MUCKRAKER, spawnDir, POL_NORMAL_INF); //build politician pair every 10 rounds
+                }
+            }
+            else if(round % 8 == 2){
+                Direction spawnDir = randomDirection();
+                if(enemyDir != null) spawnDir = enemyDir;
+                if(rc.canBuildRobot(RobotType.MUCKRAKER, spawnDir, POL_SCOUTING_INF)){
+                    rc.buildRobot(RobotType.MUCKRAKER, spawnDir, POL_SCOUTING_INF); //build politician pair every 10 rounds
+                }
+            }
+            else if(influence >= 949){
+                if(rc.canBuildRobot(RobotType.SLANDERER, Direction.NORTHEAST, 949)){
+                    rc.buildRobot(RobotType.SLANDERER, Direction.NORTHEAST, 949); //build slanderer whenever possible
+                }
+            }
+        }
 
         for(Integer scoutID : scouts){
+            if(rc.canGetFlag(scoutID)){
+                int flag = rc.getFlag(scoutID);
 
+                if(enemyAt(flag)){
+                    MapLocation target = getLocation(rc, flag);
+                    int first = 1 << 23;
+                    enemyDir = rc.getLocation().directionTo(target);
+                    sendLocation(rc, first);
+                }
+                else if(enlightenmentCenterAt(flag)){
+                    MapLocation target = getLocation(rc, flag);
+                    int sec = 1 << 22;
+                    enemyDir = rc.getLocation().directionTo(target);
+                    sendLocation(rc, sec);
+                }
+            }
         }
 
         /*for(RobotInfo robot : nearbyRobots){

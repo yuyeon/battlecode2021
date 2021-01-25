@@ -147,7 +147,12 @@ public class GameUtils {
 
     public static boolean enemyAt(int flag){
         int first = flag >> 23;
-        return (flag == 1);
+        return (first == 1);
+    }
+
+    public static boolean enlightenmentCenterAt(int flag){
+        int sec = flag >> 22;
+        return (sec == 1);
     }
 
 
