@@ -72,7 +72,7 @@ public strictfp class EnlightenmentCenter extends GenericRobot {
             }
         }
 
-        int bytecodes = Clock.getBytecodesLeft();
+        // int bytecodes = Clock.getBytecodesLeft();
 
         for(Integer robotID : allies){
             if(rc.canGetFlag(robotID)){
