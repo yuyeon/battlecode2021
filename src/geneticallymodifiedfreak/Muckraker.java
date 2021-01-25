@@ -1,4 +1,4 @@
-package examplefuncsplayer;
+package geneticallymodifiedfreak;
 
 import battlecode.common.GameActionException;
 import battlecode.common.RobotController;
